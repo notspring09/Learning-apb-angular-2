@@ -1,0 +1,36 @@
+﻿{
+  "culture": "en",
+  "texts": {
+    "Menu:Home": "Home",
+    "Welcome": "Welcome",
+    "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information, visit abp.io.",
+    "Menu:MarketPlace": "Market Place",
+    "Menu:MarketPlaces": "MarketPlaces",
+    "Actions": "Actions",
+    "Close": "Close",
+    "Delete": "Delete",
+    "Edit": "Edit",
+    "NewBook": "New book",
+    "Name": "Name",
+    "RaceType": "RaceType",
+    "Gender": "GenderType",
+    "Price": "Price",
+    "CreationTime": "Creation time",
+    "AreYouSure": "Are you sure?",
+    "AreYouSureToDelete": "Are you sure you want to delete this item?",
+    "Enum:RaceType:0": "Human",
+    "Enum:RaceType:1": "Orc",
+    "Enum:RaceType:2": "Elf",
+    "Enum:RaceType:3": "Fairy",
+    "Enum:RaceType:4": "Dragon",
+    "Enum:RaceType:5": "Demon",
+    "Enum:RaceType:6": "Angel",
+    "Enum:GenderType:0": "Male",
+    "Enum:GenderType:1": "FeMale",
+
+    //category
+    "CategoryName": "Tên danh mục",
+    "PublishDate": "Ngày tạo",
+    "CategoryCode": "Mã danh mục"
+  }
+}

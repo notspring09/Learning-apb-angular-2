@@ -1,0 +1,182 @@
+<div class="card">
+  <div class="card-header">
+    <div class="row">
+      <div class="col col-md-6">
+        <h5 class="card-title">{{ 'Quản lý danh mục' }}</h5>
+      </div>
+
+      <div class="container"t>
+        <div class="row">
+          <div class="col-6">
+            <input
+              class="form-control"
+              type="text"
+              [(ngModel)]="categoryName"
+              placeholder="Tìm kiếm"
+              (ngModelChange)="search()"
+            />
+          </div>
+          <div class="col">
+            <select class="form-control" (change)="onChange($event.target.value)">
+              <option [ngValue]="1">
+                {{ 'Mã danh mục' }}
+              </option>
+              <option [ngValue]="2">
+                {{ 'Tên danh mục' }}
+              </option>
+              <option [ngValue]="3">
+                {{ 'Ghi chú' }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md6">
+            <button id="create" class="btn btn-primary" type="button" style="margin-right: 10px;" (click)="createBook()">
+              <i class="fa fa-plus mr-1"></i>
+              <span>{{ 'Thêm mới' }}</span>
+            </button>
+            <button
+              id="create"
+              class="btn btn-primary"
+              (click)="createCategorywithRouter()"
+            >
+              <i class="fa fa-plus mr-1"></i>
+              <span>{{ 'Thêm mới link' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <!-- ngx-datatable should be here! -->
+    <ngx-datatable [rows]="category.items" [count]="category.totalCount" [list]="list" default>
+      <ngx-datatable-column name="STT" [sortable]="false">
+        <ng-template let-rowIndex="rowIndex" let-row="row" ngx-datatable-cell-template>
+          <p>{{ rowIndex + 1 }}</p>
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::CategoryCode' | abpLocalization" prop="categoryCode">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          {{ row.categoryCode | abpLocalization }}
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::CategoryName' | abpLocalization" prop="categoryName">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          {{ row.categoryName }}
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column name="Ghi chú" prop="note">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          {{ row.note | slice }}
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::PublishDate' | abpLocalization" prop="publishDate">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          {{ row.publishDate | date }}
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column
+        [name]="'::Actions' | abpLocalization"
+        [maxWidth]="150"
+        [sortable]="false"
+      >
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <div class="row">
+            <div class="col col-lg-2">
+              <button
+                class="btn btn-primary btn-sm mb-3"
+                (click)="editCategorywithRouter(row.id)"
+                aria-haspopup="true"
+              >
+                <i class="fa fa-edit"></i>
+              </button>
+            </div>
+            <div class="col col-lg-2">
+              <button
+                class="btn btn-primary btn-sm mb-3"
+                aria-haspopup="true"
+                (click)="editBook(row.id)"
+              >
+                <i class="fa fa-edit"></i>
+              </button>
+            </div>
+            <div class="col col-lg-2">
+              <button class="btn btn-primary btn-sm" aria-haspopup="true" (click)="delete(row.id)">
+                <i class="fa fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </ng-template>
+      </ngx-datatable-column>
+    </ngx-datatable>
+  </div>
+</div>
+
+<!-- Add the modal here -->
+<abp-modal [(visible)]="isModalOpen">
+  <ng-template #abpHeader>
+    <h3>{{ 'Tạo mới danh mục' }}</h3>
+  </ng-template>
+
+  <ng-template #abpBody>
+
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-group">
+        <label for="category-code">Mã danh mục</label><span> * </span>
+        <input
+          type="text"
+          id="category-code"
+          class="form-control"
+          formControlName="categoryCode"
+          autofocus
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="category-name">Tên danh mục</label><span> * </span>
+        <input
+          type="text"
+          id="category-name"
+          class="form-control"
+          formControlName="categoryName"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="category-note">Ghi chú</label><span> * </span>
+        <input
+          type="text"
+          id="category-name"
+          class="form-control"
+          formControlName="note"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Ngày tạo</label>
+        <input
+          #datepicker="ngbDatepicker"
+          class="form-control"
+          formControlName="publishDate"
+          ngbDatepicker
+          (click)="datepicker.toggle()"
+        />
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-secondary" abpClose>
+      {{ '::Close' | abpLocalization }}
+    </button>
+
+    <!--added save button-->
+    <button class="btn btn-primary" (click)="save()" [disabled]="form.invalid">
+      <i class="fa fa-check mr-1"></i>
+      {{ '::Save' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>

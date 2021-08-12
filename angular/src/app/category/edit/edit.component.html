@@ -1,0 +1,58 @@
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div class="form-group">
+    <label for="category-code">Mã danh mục</label><span> * </span>
+    <input
+      type="text"
+      id="category-code"
+      class="form-control"
+      formControlName="categoryCode"
+      autofocus
+      required
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="category-name">Tên danh mục</label><span> * </span>
+    <input
+      type="text"
+      id="category-name"
+      class="form-control"
+      formControlName="categoryName"
+      required
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="category-note">Ghi chú</label><span> * </span>
+    <input
+      type="text"
+      id="category-name"
+      class="form-control"
+      formControlName="note"
+      required
+    />
+  </div>
+
+  <div class="form-group">
+    <label>Ngày tạo</label>
+    <input
+      #datepicker="ngbDatepicker"
+      class="form-control"
+      formControlName="publishDate"
+      ngbDatepicker
+      (click)="datepicker.toggle()"
+    />
+  </div>
+
+
+  
+  <button class="btn btn-secondary"  (click)="back()">
+     Back
+  </button>
+
+  <button class="btn btn-primary" (click)="save()"  [disabled]="form.invalid">
+    <i class="fa fa-check mr-1"></i>
+     Lưu thông tin
+  </button>
+</form>
+
