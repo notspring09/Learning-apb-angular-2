@@ -1,4 +1,4 @@
-import { Component, Input, NgModule, OnInit } from '@angular/core';
+import { Component, Input, NgModule, OnInit , EventEmitter , Output  } from '@angular/core';
 import { ListService, PagedResultDto } from '@abp/ng.core';
 import { CategoryDTO } from '@proxy/category-managers';
 import { CategoryService } from '@proxy/category-manages';
@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
 
 export class CategoryComponent implements OnInit {
   category = { items: [], totalCount: 0 } as PagedResultDto<CategoryDTO>;
+
   categoryName : any;
   categoryCode : any;
   categoryNote : any;
@@ -28,6 +29,7 @@ export class CategoryComponent implements OnInit {
   totalLength:any;
   page:number = 1;
   showpost: any = [];
+  idOfEditCategory:string;
   selectedValue:string
   constructor(
     public readonly list: ListService,
@@ -48,7 +50,6 @@ export class CategoryComponent implements OnInit {
     });
 
     //binding data to dropdownlist
-
   }
 
   onChange(deviceValue) {
@@ -67,6 +68,7 @@ export class CategoryComponent implements OnInit {
   // add new method
   createBook() {
     this.selectedBook = {} as CategoryDTO; // reset the selected book
+    this.idOfEditCategory = null; // reset the selected idInput
     this.isModalOpen = true;
     this.buildForm();
   }
@@ -75,6 +77,7 @@ export class CategoryComponent implements OnInit {
   editBook(id: string) {
     this.categoryService.get(id).subscribe(category => {
       this.selectedBook = category;
+      this.idOfEditCategory = id;
       this.buildForm();
       this.isModalOpen = true;
     });
@@ -114,6 +117,12 @@ export class CategoryComponent implements OnInit {
       this.form.reset();
       this.list.get();
     });    
+  }
+
+  saveEventEmitter(){
+    this.isModalOpen = false;
+    this.form.reset();
+    this.list.get();
   }
 
   createCategorywithRouter(){

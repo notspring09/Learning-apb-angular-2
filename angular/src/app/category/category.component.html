@@ -62,7 +62,7 @@
       </ngx-datatable-column>
       <ngx-datatable-column [name]="'::CategoryName' | abpLocalization" prop="categoryName">
         <ng-template let-row="row" ngx-datatable-cell-template>
-          {{ row.categoryName }}
+          {{ row.categoryName  }}
         </ng-template>
       </ngx-datatable-column>
       <ngx-datatable-column name="Ghi chú" prop="note">
@@ -119,8 +119,9 @@
   </ng-template>
 
   <ng-template #abpBody>
-
-    <form [formGroup]="form" (ngSubmit)="save()">
+    <app-edit [idInput] = "idOfEditCategory" (eventEmitter) = "saveEventEmitter($event)">
+    </app-edit>
+    <!-- <form [formGroup]="form" (ngSubmit)="save()">
       <div class="form-group">
         <label for="category-code">Mã danh mục</label><span> * </span>
         <input
@@ -165,18 +166,17 @@
           (click)="datepicker.toggle()"
         />
       </div>
-    </form>
+    </form> -->
   </ng-template>
 
   <ng-template #abpFooter>
-    <button type="button" class="btn btn-secondary" abpClose>
+    <!-- <button type="button" class="btn btn-secondary" abpClose>
       {{ '::Close' | abpLocalization }}
     </button>
 
-    <!--added save button-->
     <button class="btn btn-primary" (click)="save()" [disabled]="form.invalid">
       <i class="fa fa-check mr-1"></i>
       {{ '::Save' | abpLocalization }}
-    </button>
+    </button> -->
   </ng-template>
 </abp-modal>

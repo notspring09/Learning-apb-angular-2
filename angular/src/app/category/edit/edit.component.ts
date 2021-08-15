@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit ,EventEmitter , Input , Output} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CategoryDTO } from '@proxy/category-managers';
 import { CategoryService } from '@proxy/category-manages';
@@ -18,6 +18,8 @@ import { Router } from '@angular/router';
 export class EditComponent implements OnInit {
   id:string;
   selectedBook = {} as CategoryDTO;
+  @Input() idInput : string;
+  @Output() eventEmitter = new EventEmitter<any>();
   isModalOpen = false; // add this line
   header:string;
   form: FormGroup; // add this line
@@ -28,18 +30,19 @@ export class EditComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
+    this.buildForm();
     this.id = this.route.snapshot.paramMap.get('id');
     //this.header = this.id === 0? 'Add Category': 'Edit Category'
-
-    if(this.id == null){
+    if(this.id == null && this.idInput != null){
+      this.id = this.idInput;
+    }
+    if(this.id == null){  
     this.selectedBook = {} as CategoryDTO; // reset the selected book
-    this.isModalOpen = true;
     this.buildForm();
     }else {
       this.categoryService.get(this.id).subscribe(category => {
         this.selectedBook = category;
         this.buildForm();
-        this.isModalOpen = true;
       });
     }
   }
@@ -71,7 +74,9 @@ save() {
 
 request.subscribe(() => {
 });  
+  this.eventEmitter.emit("done");
   this.router.navigateByUrl('/categorys');
+  
 }
 }
 
