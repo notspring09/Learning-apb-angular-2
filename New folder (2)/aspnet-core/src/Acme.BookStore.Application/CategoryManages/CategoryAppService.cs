@@ -1,13 +1,15 @@
 ﻿using Acme.BookStore.CategoryManagers;
 using Acme.BookStore.CategoryManages;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 namespace Acme.BookStore.CategoryManages
 {
     public class CategoryAppService :
-        CrudAppService<
+            CrudAppService<
             CategoryManage, //The Book entity
             CategoryDTO, //Used to show books
             Guid, //Primary key of the book entity
@@ -20,6 +22,7 @@ namespace Acme.BookStore.CategoryManages
         {
 
         }
+
     }
 
 }

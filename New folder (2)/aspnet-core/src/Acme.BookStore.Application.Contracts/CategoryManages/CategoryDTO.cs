@@ -13,6 +13,12 @@ namespace Acme.BookStore.CategoryManagers
 
         public string Note { get; set; }
 
+        public int CategoryRank { get; set; }
+
+        public String CategoryEnglishName { get; set; }
+
+        public String CategoryParent { get; set; }
+
         public DateTime PublishDate { get; set; }
     }
 }

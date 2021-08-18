@@ -31,6 +31,13 @@ export class CategoryService {
     },
     { apiName: this.apiName });
 
+    getAll = () =>
+    this.restService.request<any, CategoryDTO>({
+      method: 'GET',
+      url: `/api/app/category`,
+    },
+    { apiName: this.apiName }); 
+
   getList = (input: PagedAndSortedResultRequestDto) =>
     this.restService.request<any, PagedResultDto<CategoryDTO>>({
       method: 'GET',

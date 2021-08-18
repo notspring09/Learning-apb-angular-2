@@ -15,6 +15,13 @@ namespace Acme.BookStore.CategoryManagers
         public string CategoryCode { get; set; }
 
         public string Note { get; set; }
+        
+        public int CategoryRank { get; set; }
+
+        public String CategoryEnglishName { get; set; }
+
+        public String CategoryParent { get; set; }
+
         [Required]
         [DataType(DataType.Date)]
         public DateTime PublishDate { get; set; } = DateTime.Now;

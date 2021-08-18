@@ -1,7 +1,8 @@
 import { Component, OnInit ,EventEmitter , Input , Output} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ListService, PagedResultDto } from '@abp/ng.core';
 import { CategoryDTO } from '@proxy/category-managers';
-import { CategoryService } from '@proxy/category-manages';
+import { CategoryService  } from '@proxy/category-manages';
 import { NgbDateNativeAdapter, NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms'; // add this
 import { Router } from '@angular/router';
@@ -11,19 +12,22 @@ import { Router } from '@angular/router';
   templateUrl: './edit.component.html',
   styleUrls: ['./edit.component.scss'],
   providers: [
-    
+    ListService,
     { provide: NgbDateAdapter, useClass: NgbDateNativeAdapter }, // add this line
   ],
 })
 export class EditComponent implements OnInit {
   id:string;
   selectedBook = {} as CategoryDTO;
+  public parentItems: CategoryDTO[];
+  public parentCategories=[] as CategoryDTO[];
   @Input() idInput : string;
   @Output() eventEmitter = new EventEmitter<any>();
   isModalOpen = false; // add this line
   header:string;
   form: FormGroup; // add this line
   constructor(private route:ActivatedRoute,
+    public readonly list: ListService,
     private categoryService: CategoryService,
     private fb: FormBuilder, // inject FormBuilder
     private router: Router
@@ -50,10 +54,12 @@ export class EditComponent implements OnInit {
 
     //back về trang ch
 back(){
+  this.eventEmitter.emit("done");
   this.router.navigateByUrl('/categorys');
 }
 // add buildForm method
 buildForm() {
+  console.log( '123' + this.selectedBook);
   this.form = this.fb.group({
     categoryCode: [this.selectedBook.categoryCode || '', Validators.required],
     categoryName: [this.selectedBook.categoryName || '', Validators.required],
@@ -61,6 +67,7 @@ buildForm() {
     publishDate: [this.selectedBook.publishDate ? new Date(this.selectedBook.publishDate) : null],
   });
 }
+
 
 // add save method
 save() {

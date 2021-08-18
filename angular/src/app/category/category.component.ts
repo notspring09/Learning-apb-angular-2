@@ -83,15 +83,6 @@ export class CategoryComponent implements OnInit {
     });
   }
 
-  // Add editBook method
-  editCategory(id: string) {
-    this.categoryService.get(id).subscribe(category => {
-      this.selectedBook = category;
-      this.buildForm();
-      this.isModalOpen = true;
-    });
-  }
-
   // add buildForm method
   buildForm() {
     this.form = this.fb.group({
@@ -103,21 +94,21 @@ export class CategoryComponent implements OnInit {
   }
 
   // add save method
-  save() {
-    if (this.form.invalid) {
-      return;
-    }
+  // save() {
+  //   if (this.form.invalid) {
+  //     return;
+  //   }
 
-    const request = this.selectedBook.id
-      ? this.categoryService.update(this.selectedBook.id, this.form.value)
-      : this.categoryService.create(this.form.value);
+  //   const request = this.selectedBook.id
+  //     ? this.categoryService.update(this.selectedBook.id, this.form.value)
+  //     : this.categoryService.create(this.form.value);
 
-    request.subscribe(() => {
-      this.isModalOpen = false;
-      this.form.reset();
-      this.list.get();
-    });    
-  }
+  //   request.subscribe(() => {
+  //     this.isModalOpen = false;
+  //     this.form.reset();
+  //     this.list.get();
+  //   });    
+  // }
 
   saveEventEmitter(){
     this.isModalOpen = false;
@@ -132,6 +123,7 @@ export class CategoryComponent implements OnInit {
   editCategorywithRouter(id:string){
     this.router.navigateByUrl('/categorys/edit/' + id);
   }
+  
 
   //tìm kiếm
   search(){
