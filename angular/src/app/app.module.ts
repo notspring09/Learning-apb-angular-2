@@ -14,11 +14,17 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { APP_ROUTE_PROVIDER } from './route.provider';
+import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatTableModule} from '@angular/material/table';
 
 @NgModule({
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    MatTableModule,
+    MatTabsModule,
+    NgbModule,
     AppRoutingModule,
     CoreModule.forRoot({
       environment,

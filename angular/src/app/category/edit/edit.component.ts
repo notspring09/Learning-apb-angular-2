@@ -2,6 +2,7 @@ import { Component, OnInit ,EventEmitter , Input , Output} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ListService, PagedResultDto } from '@abp/ng.core';
 import { CategoryDTO } from '@proxy/category-managers';
+import {MatTabsModule} from '@angular/material/tabs';
 import { CategoryService  } from '@proxy/category-manages';
 import { NgbDateNativeAdapter, NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms'; // add this
@@ -22,10 +23,14 @@ export class EditComponent implements OnInit {
   public parentItems: CategoryDTO[];
   public parentCategories=[] as CategoryDTO[];
   @Input() idInput : string;
+  @Input() parentInput : Array<CategoryDTO>;
   @Output() eventEmitter = new EventEmitter<any>();
   isModalOpen = false; // add this line
   header:string;
+  selectedValue:string
   form: FormGroup; // add this line
+  parentName : string;
+  parentRank : number;
   constructor(private route:ActivatedRoute,
     public readonly list: ListService,
     private categoryService: CategoryService,
@@ -51,6 +56,14 @@ export class EditComponent implements OnInit {
     }
   }
 
+  onChange(deviceValue) {
+      this.selectedValue = deviceValue;
+      this.categoryService.get(deviceValue).subscribe(category => {
+      this.parentName = category.categoryName;
+      this.parentRank = category.categoryRank;
+    });
+}
+
 
     //back về trang ch
 back(){
@@ -59,13 +72,18 @@ back(){
 }
 // add buildForm method
 buildForm() {
-  console.log( '123' + this.selectedBook);
   this.form = this.fb.group({
+    id: [this.selectedBook.id || ''],
+    
     categoryCode: [this.selectedBook.categoryCode || '', Validators.required],
     categoryName: [this.selectedBook.categoryName || '', Validators.required],
-    note: [this.selectedBook.note || ''],
+    categoryParent : [this.selectedBook.categoryParent || ''],
+    categoryEnglishName: [this.selectedBook.categoryEnglishName || ''],
+    categoryRank: [this.selectedBook.categoryRank || ''],
+    note: [this.selectedBook.note || ''],    
     publishDate: [this.selectedBook.publishDate ? new Date(this.selectedBook.publishDate) : null],
   });
+  //this.parentName = this.form.value.categoryParent;
 }
 
 
@@ -75,6 +93,15 @@ save() {
     return;
   }
 
+  if(this.form.value.categoryEnglishName == ''){
+    this.form.value.categoryEnglishName = this.form.value.categoryName;
+    }
+  this.form.value.categoryParent = this.parentName;
+  if(this.form.value.categoryParent == null){
+    this.form.value.categoryRank = 0
+  }else{
+    this.form.value.categoryRank = this.parentRank + 1;
+  }
   const request = this.selectedBook.id
   ? this.categoryService.update(this.selectedBook.id, this.form.value)
   : this.categoryService.create(this.form.value);

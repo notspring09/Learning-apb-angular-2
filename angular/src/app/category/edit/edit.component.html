@@ -2,9 +2,11 @@
 <form [formGroup]="form" >
   <div class="form-group">
     <label for="category-name">Danh mục cha</label><span> * </span>
-    <select class="form-control" formControlName="categoryName">
-      <option selected value='null'>-------Danh mục cha--------</option>
-      <option *ngFor="let x of selectedBook" [value]="x.categoryCode">{{x.categoryCode}}</option>
+    <select  class="form-control"   (change)="onChange($event.target.value)"  >
+      <option value='' style="text-align: center;" >Lựa chọn danh mục cha </option>   
+      <option *ngFor="let e of parentInput" [value]="e.id">
+        {{e.categoryName}}
+      </option>
     </select>
   </div>
   <div class="form-group">
@@ -20,17 +22,6 @@
   </div>
 
   <div class="form-group">
-    <label for="category-name">Tên danh mục</label><span> * </span>
-    <input
-      type="text"
-      id="category-name"
-      class="form-control"
-      formControlName="categoryName"
-      required
-    />
-  </div>
-
-  <div class="form-group">
     <label for="category-note">Ghi chú</label><span> * </span>
     <input
       type="text"
@@ -39,6 +30,7 @@
       formControlName="note"
       required
     />
+
   </div>
 
   <div class="form-group">
@@ -51,14 +43,45 @@
       (click)="datepicker.toggle()"
     />
   </div>
+  <ngb-tabset [destroyOnHide]="false">  
+    <ngb-tab>
+      <ng-template ngbTabTitle > <span class="flag-icon flag-icon-vn"> </span> Tiếng Việt</ng-template>
+      <ng-template ngbTabContent>
+        <div class="form-group">
+          <label for="category-name" style="margin-top: 30px;">Tên danh mục(vn)*</label>
+          <input
+            type="text"
+            pattern="^[a-zA-Z0-9_-]+$"
+            id="category-name"
+            class="form-control"
+            formControlName="categoryName"        
+            required    
+          />
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab>
+      <ng-template ngbTabTitle > <span class="flag-icon flag-icon-us"> </span> Tiếng Anh</ng-template>
+      <ng-template ngbTabContent>
+        <div class="form-group">
+          <label for="category-name" style="margin-top: 30px;">Tên danh mục(en)</label>
+          <input
+            type="text"
+            pattern="^[a-zA-Z0-9_-]+$"
+            id="category-name"
+            class="form-control"
+            formControlName="categoryEnglishName"            
+          />
+        </div>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
 
-
-  
-  <button class="btn btn-secondary"  (click)="back()">
+  <button class="btn btn-secondary"  style="margin-top: 30px;" (click)="back()">
      Back
   </button>
 
-  <button class="btn btn-primary" (click)="save()"  [disabled]="form.invalid">
+  <button class="btn btn-primary"  style="margin-top: 30px;" (click)="save()"  [disabled]="form.invalid">
     <i class="fa fa-check mr-1"></i>
      Lưu thông tin
   </button>

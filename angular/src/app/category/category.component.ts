@@ -18,8 +18,8 @@ import { Router } from '@angular/router';
 })
 
 export class CategoryComponent implements OnInit {
-  category = { items: [], totalCount: 0 } as PagedResultDto<CategoryDTO>;
-
+  categoryPage = { items: [], totalCount: 0 } as PagedResultDto<CategoryDTO>;
+  emailsCopy:Array<CategoryDTO> = [];
   categoryName : any;
   categoryCode : any;
   categoryNote : any;
@@ -31,6 +31,7 @@ export class CategoryComponent implements OnInit {
   showpost: any = [];
   idOfEditCategory:string;
   selectedValue:string
+  public strParent: string = '';
   constructor(
     public readonly list: ListService,
     private categoryService: CategoryService,
@@ -43,15 +44,18 @@ export class CategoryComponent implements OnInit {
     const categoryStreamCreator = query => this.categoryService.getList(query);
 
     this.list.hookToQuery(categoryStreamCreator).subscribe(response => {
-      this.category = response;
-      this.showpost = this.category.items;
-      this.totalLength  = this.category.items.length;
-      console.log(this.showpost)
+    
+      this.categoryPage = response;
+      this.showpost = this.categoryPage.items;
+      this.totalLength  = this.categoryPage.items.length;
+      
+       this.emailsCopy = [...this.categoryPage.items]; 
+       console.log(this.emailsCopy)
     });
 
     //binding data to dropdownlist
   }
-
+  
   onChange(deviceValue) {
     this.selectedValue = deviceValue;
 }
@@ -88,9 +92,14 @@ export class CategoryComponent implements OnInit {
     this.form = this.fb.group({
       categoryCode: [this.selectedBook.categoryCode || '', Validators.required],
       categoryName: [this.selectedBook.categoryName || '', Validators.required],
+      categoryParent: [this.selectedBook.categoryParent || ''],
       note: [this.selectedBook.note || ''],
       publishDate: [this.selectedBook.publishDate ? new Date(this.selectedBook.publishDate) : null],
     });
+  }
+
+  onEvent(e){
+    this.strParent = e.node.data.code;
   }
 
   // add save method
@@ -135,7 +144,7 @@ export class CategoryComponent implements OnInit {
         if(this.categoryName == ""){
           this.ngOnInit();
         }else{
-          this.category.items = this.category.items.filter(res =>{
+          this.categoryPage.items = this.categoryPage.items.filter(res =>{
             return res.categoryCode.toLocaleLowerCase().match(this.categoryName.toLocaleLowerCase());
           })
         }
@@ -145,7 +154,7 @@ export class CategoryComponent implements OnInit {
         if(this.categoryName == ""){
           this.ngOnInit();
         }else{
-          this.category.items = this.category.items.filter(res =>{
+          this.categoryPage.items = this.categoryPage.items.filter(res =>{
             return res.categoryName.toLocaleLowerCase().match(this.categoryName.toLocaleLowerCase());
           })
         }
@@ -155,7 +164,7 @@ export class CategoryComponent implements OnInit {
         if(this.categoryName == ""){
           this.ngOnInit();
         }else{
-          this.category.items = this.category.items.filter(res =>{
+          this.categoryPage.items = this.categoryPage.items.filter(res =>{
             return res.note.toLocaleLowerCase().match(this.categoryName.toLocaleLowerCase());
           })
         }
