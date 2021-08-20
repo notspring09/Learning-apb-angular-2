@@ -73,7 +73,8 @@ export class EditComponent implements OnInit {
   onChange(deviceValue) {
     this.selectedValue = deviceValue;
     this.categoryService.get(deviceValue).subscribe(category => {
-      this.parentName = category.categoryName;
+      this.parentName = category.categoryCode;
+       
       this.parentRank = category.categoryRank;
     });
   }

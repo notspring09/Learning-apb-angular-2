@@ -113,8 +113,8 @@ export class CategoryComponent implements OnInit {
 
     for (var i = 0, len = dataList.length; i < len; i++) {
       arrElem = dataList[i];
-      mappedArr[arrElem.categoryName] = arrElem;
-      mappedArr[arrElem.categoryName]['children'] = [];
+      mappedArr[arrElem.categoryCode] = arrElem;
+      mappedArr[arrElem.categoryCode]['children'] = [];
     }
 
     for (var id in mappedArr) {
@@ -227,15 +227,15 @@ export class CategoryComponent implements OnInit {
   }
 
   onEvent(e) {
-    this.strParent = e.node.data.categoryName;
+    this.strParent = e.node.data.categoryCode;
     this.isShowSelect = false;
     if (this.strParent == '') {
       this.ngOnInit();
     } else {
       this.categoryPage.items = this.emailsCopy;
       this.categoryPage.items = this.categoryPage.items.filter(res => {
-        if (res.categoryParent != null) {
-          return res.categoryParent.match(this.strParent);
+        if (res.categoryCode != null) {
+          return res.categoryCode.match(this.strParent);
         }
       });
     }

@@ -38,7 +38,7 @@
             </select>       -->
             <select class="form-control" (click)="showSelect()" *ngIf="!isShowSelect" [(ngModel)]="strParent" >
               <option value="" style="text-align: center">Lựa chọn danh mục cha</option>
-              <option *ngFor="let e of emailsCopy" [value]="e.categoryName">
+              <option *ngFor="let e of emailsCopy" [value]="e.categoryCode">
                 {{ e.categoryName }}
               </option>
             </select>          
