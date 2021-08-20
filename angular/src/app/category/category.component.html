@@ -30,14 +30,18 @@
             </select>
           </div>
           <div class="col">
-            <select  class="form-control"   (change)="onChange($event.target.value)">
+            <select  class="form-control"   (change)="onChange12($event.target.value)">
               <option value='' style="text-align: center;" >Lựa chọn danh mục cha </option>   
               <option *ngFor="let e of emailsCopy" [value]="e.categoryName">
                 {{e.categoryName}}
               </option>
             </select>
+
+            '<tree-root [nodes]="nodes" ></tree-root>'
           </div>
-          
+
+
+
           <div class="col-md6">
             <button id="create" class="btn btn-primary" type="button" style="margin-right: 10px;" (click)="createBook()">
               <i class="fa fa-plus mr-1"></i>
@@ -56,6 +60,9 @@
       </div>
     </div>
   </div>
+
+
+  
   <div class="card-body">
     <!-- ngx-datatable should be here! -->
     <ngx-datatable [rows]="categoryPage.items" [count]="categoryPage.totalCount" [list]="list" default>

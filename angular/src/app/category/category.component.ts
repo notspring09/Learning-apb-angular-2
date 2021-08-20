@@ -1,4 +1,4 @@
-import { Component, Input, NgModule, OnInit , EventEmitter , Output  } from '@angular/core';
+import { Component, Input, NgModule, OnInit, EventEmitter, Output } from '@angular/core';
 import { ListService, PagedResultDto } from '@abp/ng.core';
 import { CategoryDTO } from '@proxy/category-managers';
 import { CategoryService } from '@proxy/category-manages';
@@ -16,21 +16,24 @@ import { Router } from '@angular/router';
     { provide: NgbDateAdapter, useClass: NgbDateNativeAdapter }, // add this line
   ],
 })
-
 export class CategoryComponent implements OnInit {
   categoryPage = { items: [], totalCount: 0 } as PagedResultDto<CategoryDTO>;
-  emailsCopy:Array<CategoryDTO> = [];
-  categoryName : any;
-  categoryCode : any;
-  categoryNote : any;
+  emailsCopy: Array<CategoryDTO> = [];
+  categoryName: any;
+  categoryCode: any;
+  categoryNote: any;
+  public parentItems: any[];
   form: FormGroup; // add this line
   selectedBook = {} as CategoryDTO;
   isModalOpen = false; // add this line
-  totalLength:any;
-  page:number = 1;
+  totalLength: any;
+  page: number = 1;
   showpost: any = [];
-  idOfEditCategory:string;
-  selectedValue:string
+  idOfEditCategory: string;
+  temp = [];
+  rows = [];
+  newArray : any = [];
+  selectedValue: string;
   public strParent: string = '';
   constructor(
     public readonly list: ListService,
@@ -44,21 +47,109 @@ export class CategoryComponent implements OnInit {
     const categoryStreamCreator = query => this.categoryService.getList(query);
 
     this.list.hookToQuery(categoryStreamCreator).subscribe(response => {
-    
       this.categoryPage = response;
       this.showpost = this.categoryPage.items;
-      this.totalLength  = this.categoryPage.items.length;
-      
-       this.emailsCopy = [...this.categoryPage.items]; 
-       console.log(this.emailsCopy)
+      this.totalLength = this.categoryPage.items.length;
+      this.emailsCopy = [...this.categoryPage.items];
+      console.log(this.emailsCopy);
+      this.newArray = this.flatListToTreeViewData(this.emailsCopy)
+      this.newArray = this.emailsCopy.map(item =>({
+        "categoryName"   : item.categoryName,
+        children: this.emailsCopy.filter(el => el.categoryParent === this.categoryName), // Not sure about that, but this is the idea
+      })
+    );
     });
 
+    
+  
+  console.log(this.newArray)
     //binding data to dropdownlist
   }
+
+  flatListToTreeViewData(dataList) {
+    var tree = [],
+        mappedArr = {},
+        arrElem,
+        mappedElem;
+
+    for (var i = 0, len = dataList.length; i < len; i++) {
+        arrElem = dataList[i];
+        mappedArr[arrElem.categoryName] = arrElem;
+        mappedArr[arrElem.categoryName]['children'] = [];
+    }
+
+    for (var id in mappedArr) {
+        if (mappedArr.hasOwnProperty(id)) {
+            mappedElem = mappedArr[id];
+            if (mappedElem.categoryParent) {
+                mappedArr[mappedElem['categoryParent']]['children'].push(mappedElem);
+            }else {
+                tree.push(mappedElem);
+            }
+        }
+    }
+    return tree;
+}
+
+  nodes = [
+    {
+      id: 1,
+      name: 'root1',
+      children: [
+        { id: 2, name: 'child1' },
+        { id: 3, name: 'child2' }
+      ]
+    },
+    {
+      id: 4,
+      name: 'root2',
+      children: [
+        { id: 5, name: 'child2.1' },
+        {
+          id: 6,
+          name: 'child2.2',
+          children: [
+            { id: 7, name: 'subsub' }
+          ]
+        }
+      ]
+    }
+  ];
+
   
+
   onChange(deviceValue) {
     this.selectedValue = deviceValue;
-}
+  }
+
+  onChange12(deviceValue) {
+    this.selectedValue = deviceValue;
+    //   const val = this.selectedValue.toLowerCase();
+    //     if (val==""){
+    //       this.ngOnInit();
+    //     }
+    //     else{
+    //       this.categoryPage.items=this.emailsCopy
+    //     // filter our data
+    //     const temp = this.categoryPage.items.filter(function (d) {
+    //       return d.categoryName.toLowerCase().indexOf(val) !== -1 || !val;
+
+    //     });
+    //     this.rows = temp;
+    //   this.categoryPage.items=temp
+    // }
+
+    if (this.selectedValue == '') {
+      this.ngOnInit();
+    } else {
+      this.categoryPage.items = this.emailsCopy;
+      this.categoryPage.items = this.categoryPage.items.filter(res => {
+        if (res.categoryParent != null) {
+          return res.categoryParent.match(this.selectedValue);
+        }
+      });
+    }
+  }
 
   // Add a delete method
   delete(id: string) {
@@ -98,7 +189,7 @@ export class CategoryComponent implements OnInit {
     });
   }
 
-  onEvent(e){
+  onEvent(e) {
     this.strParent = e.node.data.code;
   }
 
@@ -116,68 +207,67 @@ export class CategoryComponent implements OnInit {
   //     this.isModalOpen = false;
   //     this.form.reset();
   //     this.list.get();
-  //   });    
+  //   });
   // }
 
-  saveEventEmitter(){
+  saveEventEmitter() {
     this.isModalOpen = false;
     this.form.reset();
     this.list.get();
   }
 
-  createCategorywithRouter(){
+  createCategorywithRouter() {
     this.router.navigateByUrl('/categorys/add/');
   }
 
-  editCategorywithRouter(id:string){
+  editCategorywithRouter(id: string) {
     this.router.navigateByUrl('/categorys/edit/' + id);
   }
-  
 
   //tìm kiếm
-  search(){
-    if (this.selectedValue == null){
-      this.selectedValue = 'Mã danh mục'
+  search() {
+    if (this.selectedValue == null) {
+      this.selectedValue = 'Mã danh mục';
     }
-    switch(this.selectedValue) { 
-      case 'Mã danh mục': { 
-        if(this.categoryName == ""){
+    switch (this.selectedValue) {
+      case 'Mã danh mục': {
+        if (this.categoryName == '') {
           this.ngOnInit();
-        }else{
-          this.categoryPage.items = this.categoryPage.items.filter(res =>{
-            return res.categoryCode.toLocaleLowerCase().match(this.categoryName.toLocaleLowerCase());
-          })
+        } else {
+          this.categoryPage.items = this.categoryPage.items.filter(res => {
+            return res.categoryCode
+              .toLocaleLowerCase()
+              .match(this.categoryName.toLocaleLowerCase());
+          });
         }
-         break; 
-      } 
-      case 'Tên danh mục': { 
-        if(this.categoryName == ""){
-          this.ngOnInit();
-        }else{
-          this.categoryPage.items = this.categoryPage.items.filter(res =>{
-            return res.categoryName.toLocaleLowerCase().match(this.categoryName.toLocaleLowerCase());
-          })
-        }
-         break; 
-      } 
-      case 'Ghi chú': {
-        if(this.categoryName == ""){
-          this.ngOnInit();
-        }else{
-          this.categoryPage.items = this.categoryPage.items.filter(res =>{
-            return res.note.toLocaleLowerCase().match(this.categoryName.toLocaleLowerCase());
-          })
-        }
-         break;
+        break;
       }
-      default: { 
-         //statements; 
-         break; 
-      } 
-   } 
-
-
-    
-
+      case 'Tên danh mục': {
+        if (this.categoryName == '') {
+          this.ngOnInit();
+        } else {
+          this.categoryPage.items = this.categoryPage.items.filter(res => {
+            return res.categoryName
+              .toLocaleLowerCase()
+              .match(this.categoryName.toLocaleLowerCase());
+          });
+        }
+        break;
+      }
+      case 'Ghi chú': {
+        if (this.categoryName == '') {
+          this.ngOnInit();
+        } else {
+          this.categoryPage.items = this.categoryPage.items.filter(res => {
+            return res.note.toLocaleLowerCase().match(this.categoryName.toLocaleLowerCase());
+          });
+        }
+        break;
+      }
+      default: {
+        //statements;
+        break;
+      }
+    }
   }
 }
