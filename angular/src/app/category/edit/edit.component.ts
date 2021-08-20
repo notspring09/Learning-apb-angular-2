@@ -84,8 +84,8 @@ export class EditComponent implements OnInit {
       this.strCode = this.makeRandom(30,"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
       //document.getElementById("category-code-input").disabled = false;
       this.isReadonly = true;
-      (<HTMLInputElement>document.getElementById("category-code-input")).value = this.strCode
-      this.form.value.categoryCode = this.strCode
+      // (<HTMLInputElement>document.getElementById("category-code-input")).value = this.strCode
+      this.form.controls.categoryCode.setValue(this.strCode);
     } else {
       this.strCode = '';
       this.isReadonly = false

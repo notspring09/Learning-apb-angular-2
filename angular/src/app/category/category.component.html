@@ -5,7 +5,7 @@
         <h5 class="card-title">{{ 'Quản lý danh mục 123' }}</h5>
       </div>
 
-      <div class="container"t>
+      <div class="container" t>
         <div class="row">
           <div class="col-3">
             <input
@@ -30,28 +30,44 @@
             </select>
           </div>
           <div class="col">
-            <select  class="form-control"   (change)="onChange12($event.target.value)">
-              <option value='' style="text-align: center;" >Lựa chọn danh mục cha </option>   
+            <!-- <select class="form-control" (change)="onChange12($event.target.value)">
+              <option value="" style="text-align: center">Lựa chọn danh mục cha</option>
               <option *ngFor="let e of emailsCopy" [value]="e.categoryName">
-                {{e.categoryName}}
+                {{ e.categoryName }}
               </option>
-            </select>
-
-            '<tree-root [nodes]="nodes" ></tree-root>'
+            </select>       -->
+            <select class="form-control" (click)="showSelect()" *ngIf="!isShowSelect" [(ngModel)]="strParent" >
+              <option value="" style="text-align: center">Lựa chọn danh mục cha</option>
+              <option *ngFor="let e of emailsCopy" [value]="e.categoryName">
+                {{ e.categoryName }}
+              </option>
+            </select>          
+            <div *ngIf="isShowSelect">
+            <div class="card border-left-primary shadow h-100 py-2">
+              <div class="card-body">
+                <button style="border: none; background:none; font-size: 18px;" type="button" (click)="Select()">--------chọn tất--------</button>
+                <tree-root [nodes]="newArray" (activate)="onEvent($event)">
+                  <ng-template #treeNodeTemplate let-node let-index="index">
+                    <span>{{ node.data.categoryName }}</span>
+                  </ng-template>
+                </tree-root>
+              </div>
+            </div>
           </div>
-
-
+        </div>
 
           <div class="col-md6">
-            <button id="create" class="btn btn-primary" type="button" style="margin-right: 10px;" (click)="createBook()">
-              <i class="fa fa-plus mr-1"></i>
-              <span>{{ 'Thêm mới' }}</span>
-            </button>
             <button
               id="create"
               class="btn btn-primary"
-              (click)="createCategorywithRouter()"
+              type="button"
+              style="margin-right: 10px"
+              (click)="createBook()"
             >
+              <i class="fa fa-plus mr-1"></i>
+              <span>{{ 'Thêm mới' }}</span>
+            </button>
+            <button id="create" class="btn btn-primary" (click)="createCategorywithRouter()">
               <i class="fa fa-plus mr-1"></i>
               <span>{{ 'Thêm mới link' }}</span>
             </button>
@@ -61,11 +77,14 @@
     </div>
   </div>
 
-
-  
   <div class="card-body">
     <!-- ngx-datatable should be here! -->
-    <ngx-datatable [rows]="categoryPage.items" [count]="categoryPage.totalCount" [list]="list" default>
+    <ngx-datatable
+      [rows]="categoryPage.items"
+      [count]="categoryPage.totalCount"
+      [list]="list"
+      default
+    >
       <ngx-datatable-column name="STT" [sortable]="false">
         <ng-template let-rowIndex="rowIndex" let-row="row" ngx-datatable-cell-template>
           <p>{{ rowIndex + 1 }}</p>
@@ -78,12 +97,12 @@
       </ngx-datatable-column>
       <ngx-datatable-column [name]="'::CategoryName' | abpLocalization" prop="categoryName">
         <ng-template let-row="row" ngx-datatable-cell-template>
-          {{ row.categoryName  }}
+          {{ row.categoryName }}
         </ng-template>
       </ngx-datatable-column>
       <ngx-datatable-column name="Danh mục cha" prop="categoryName">
         <ng-template let-row="row" ngx-datatable-cell-template>
-          {{ row.categoryParent  }}
+          {{ row.categoryParent }}
         </ng-template>
       </ngx-datatable-column>
       <ngx-datatable-column name="Ghi chú" prop="note">
@@ -103,9 +122,8 @@
       >
         <ng-template let-row="row" ngx-datatable-cell-template>
           <div class="row">
-            <div class="col col-lg-2" style="margin-right: 10px;">
+            <div class="col col-lg-2" style="margin-right: 10px">
               <button
-                
                 class="btn btn-primary btn-sm mb-3"
                 (click)="editCategorywithRouter(row.id)"
                 aria-haspopup="true"
@@ -113,7 +131,7 @@
                 <i class="fa fa-edit"></i>
               </button>
             </div>
-            <div class="col col-lg-2" style="margin-right: 10px;">
+            <div class="col col-lg-2" style="margin-right: 10px">
               <button
                 class="btn btn-primary btn-sm mb-3"
                 aria-haspopup="true"
@@ -122,7 +140,7 @@
                 <i class="fa fa-edit"></i>
               </button>
             </div>
-            <div class="col col-lg-2" > 
+            <div class="col col-lg-2">
               <button class="btn btn-primary btn-sm" aria-haspopup="true" (click)="delete(row.id)">
                 <i class="fa fa-trash"></i>
               </button>
@@ -141,7 +159,11 @@
   </ng-template>
 
   <ng-template #abpBody>
-    <app-edit [idInput] = "idOfEditCategory" (eventEmitter) = "saveEventEmitter($event)" [parentInput] = "emailsCopy">
+    <app-edit
+      [idInput]="idOfEditCategory"
+      (eventEmitter)="saveEventEmitter($event)"
+      [parentInput]="emailsCopy"
+    >
     </app-edit>
     <!-- <form [formGroup]="form" (ngSubmit)="save()">
       <div class="form-group">

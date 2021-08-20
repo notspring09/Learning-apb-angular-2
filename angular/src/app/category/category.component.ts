@@ -1,7 +1,7 @@
 import { Component, Input, NgModule, OnInit, EventEmitter, Output } from '@angular/core';
 import { ListService, PagedResultDto } from '@abp/ng.core';
-import { CategoryDTO } from '@proxy/category-managers';
-import { CategoryService } from '@proxy/category-manages';
+import { CategoryDTO , GetCategoryListDto} from '@proxy/category-managers';
+import { CategoryService  } from '@proxy/category-manages';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms'; // add this
 import { ConfirmationService, Confirmation } from '@abp/ng.theme.shared';
 import { NgbDateNativeAdapter, NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
@@ -28,11 +28,13 @@ export class CategoryComponent implements OnInit {
   isModalOpen = false; // add this line
   totalLength: any;
   page: number = 1;
+  public input = {} as GetCategoryListDto;
   showpost: any = [];
   idOfEditCategory: string;
   temp = [];
   rows = [];
-  newArray : any = [];
+  public isShowSelect: boolean = false;
+  newArray: any = [];
   selectedValue: string;
   public strParent: string = '';
   constructor(
@@ -52,44 +54,83 @@ export class CategoryComponent implements OnInit {
       this.totalLength = this.categoryPage.items.length;
       this.emailsCopy = [...this.categoryPage.items];
       console.log(this.emailsCopy);
-      this.newArray = this.flatListToTreeViewData(this.emailsCopy)
-      this.newArray = this.emailsCopy.map(item =>({
-        "categoryName"   : item.categoryName,
-        children: this.emailsCopy.filter(el => el.categoryParent === this.categoryName), // Not sure about that, but this is the idea
-      })
-    );
+      
+      this.newArray = this.flatListToTreeViewDataByName(this.emailsCopy);
+      // this.newArray = this.emailsCopy.map(item => ({
+      //   categoryName: item.categoryName,
+      //   children: this.emailsCopy.filter(el => el.categoryParent === this.categoryName), // Not sure about that, but this is the idea
+      // }));
+      console.log(this.flatListToTreeViewDataByName(this.emailsCopy));
+      console.log(this.newArray);
     });
 
     
-  
-  console.log(this.newArray)
     //binding data to dropdownlist
+  }
+
+  showSelect() {
+    this.isShowSelect = true;
   }
 
   flatListToTreeViewData(dataList) {
     var tree = [],
-        mappedArr = {},
-        arrElem,
-        mappedElem;
+      mappedArr = {},
+      arrElem,
+      mappedElem;
 
     for (var i = 0, len = dataList.length; i < len; i++) {
-        arrElem = dataList[i];
-        mappedArr[arrElem.categoryName] = arrElem;
-        mappedArr[arrElem.categoryName]['children'] = [];
+      arrElem = dataList[i];
+      mappedArr[arrElem.id] = arrElem;
+      mappedArr[arrElem.id]['children'] = [];
     }
 
     for (var id in mappedArr) {
-        if (mappedArr.hasOwnProperty(id)) {
-            mappedElem = mappedArr[id];
-            if (mappedElem.categoryParent) {
-                mappedArr[mappedElem['categoryParent']]['children'].push(mappedElem);
-            }else {
-                tree.push(mappedElem);
-            }
+      if (mappedArr.hasOwnProperty(id)) {
+        mappedElem = mappedArr[id];
+        if (mappedElem.parentid) {
+          mappedArr[mappedElem['parentid']]['children'].push(mappedElem);
+        } else {
+          tree.push(mappedElem);
         }
+      }
     }
     return tree;
-}
+  }
+
+  Select() {
+    this.isShowSelect = false;
+    this.strParent = '';
+    this.ngOnInit();
+  }
+
+  
+
+  flatListToTreeViewDataByName(dataList) {
+    var tree = [],
+      mappedArr = {},
+      arrElem,
+      mappedElem;
+
+    for (var i = 0, len = dataList.length; i < len; i++) {
+      arrElem = dataList[i];
+      mappedArr[arrElem.categoryName] = arrElem;
+      mappedArr[arrElem.categoryName]['children'] = [];
+    }
+
+    for (var id in mappedArr) {
+      if (mappedArr.hasOwnProperty(id)) {
+        mappedElem = mappedArr[id];
+        if (mappedElem.categoryParent) {
+          mappedArr[mappedElem['categoryParent']]['children'].push(mappedElem);
+        } else {
+          tree.push(mappedElem);
+        }
+      }
+    }
+    return tree;
+  }
+
+  
 
   nodes = [
     {
@@ -97,8 +138,8 @@ export class CategoryComponent implements OnInit {
       name: 'root1',
       children: [
         { id: 2, name: 'child1' },
-        { id: 3, name: 'child2' }
-      ]
+        { id: 3, name: 'child2' },
+      ],
     },
     {
       id: 4,
@@ -108,15 +149,11 @@ export class CategoryComponent implements OnInit {
         {
           id: 6,
           name: 'child2.2',
-          children: [
-            { id: 7, name: 'subsub' }
-          ]
-        }
-      ]
-    }
+          children: [{ id: 7, name: 'subsub' }],
+        },
+      ],
+    },
   ];
-
-  
 
   onChange(deviceValue) {
     this.selectedValue = deviceValue;
@@ -190,7 +227,19 @@ export class CategoryComponent implements OnInit {
   }
 
   onEvent(e) {
-    this.strParent = e.node.data.code;
+    this.strParent = e.node.data.categoryName;
+    this.isShowSelect = false;
+    if (this.strParent == '') {
+      this.ngOnInit();
+    } else {
+      this.categoryPage.items = this.emailsCopy;
+      this.categoryPage.items = this.categoryPage.items.filter(res => {
+        if (res.categoryParent != null) {
+          return res.categoryParent.match(this.strParent);
+        }
+      });
+    }
+    //this.isShowSelect = false;
   }
 
   // add save method

@@ -19,6 +19,8 @@ namespace Acme.BookStore.CategoryManagers
 
         public String CategoryParent { get; set; }
 
+        public String parentid { get; set; }
+
         public DateTime PublishDate { get; set; }
     }
 }
