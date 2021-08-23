@@ -51,6 +51,7 @@ export class EditComponent implements OnInit {
   ngOnInit(): void {
     this.selectedValue = this.idInput;
     this.buildForm();
+    
     this.id = this.route.snapshot.paramMap.get('id');
     //this.header = this.id === 0? 'Add Category': 'Edit Category'
     if (this.id == null && this.idInput != null) {
@@ -63,6 +64,7 @@ export class EditComponent implements OnInit {
       this.categoryService.get(this.id).subscribe(category => {
         this.selectedBook = category;
         this.buildForm();
+        this.strParent = this.selectedBook.categoryParent
       });
     }
 
@@ -74,6 +76,7 @@ export class EditComponent implements OnInit {
       
       this.newArray = this.flatListToTreeViewDataByName(this.emailsCopy);
   });
+  
 }
 
 showSelect() {
