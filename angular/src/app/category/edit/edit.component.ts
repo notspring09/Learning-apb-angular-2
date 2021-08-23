@@ -20,6 +20,7 @@ import { DOCUMENT } from '@angular/common';
 })
 export class EditComponent implements OnInit {
   id: string;
+  categoryPage = { items: [], totalCount: 0 } as PagedResultDto<CategoryDTO>;
   selectedBook = {} as CategoryDTO;
   public parentItems: CategoryDTO[];
   element: HTMLElement;
@@ -33,8 +34,12 @@ export class EditComponent implements OnInit {
   selectedValue: string;
   form: FormGroup; // add this line
   parentName: string;
+  emailsCopy: Array<CategoryDTO> = [];
   parentRank: number;
   isReadonly : boolean = false
+  public isShowSelect: boolean = false;
+  newArray: any = [];
+  public strParent: string = '';
   constructor(
     private route: ActivatedRoute,
     public readonly list: ListService,
@@ -60,14 +65,44 @@ export class EditComponent implements OnInit {
         this.buildForm();
       });
     }
-  }
 
-  makeRandom(lengthOfCode: number, possible: string) {
-    let text = '';
-    for (let i = 0; i < lengthOfCode; i++) {
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    const categoryStreamCreator = query => this.categoryService.getList(query);
+
+    this.list.hookToQuery(categoryStreamCreator).subscribe(response => {
+      this.categoryPage = response;
+      this.emailsCopy = [...this.categoryPage.items];
+      
+      this.newArray = this.flatListToTreeViewDataByName(this.emailsCopy);
+  });
+}
+
+showSelect() {
+  this.isShowSelect = true;
+}
+
+  flatListToTreeViewDataByName(dataList) {
+    var tree = [],
+      mappedArr = {},
+      arrElem,
+      mappedElem;
+
+    for (var i = 0, len = dataList.length; i < len; i++) {
+      arrElem = dataList[i];
+      mappedArr[arrElem.categoryCode] = arrElem;
+      mappedArr[arrElem.categoryCode]['children'] = [];
     }
-    return text;
+
+    for (var id in mappedArr) {
+      if (mappedArr.hasOwnProperty(id)) {
+        mappedElem = mappedArr[id];
+        if (mappedElem.categoryParent) {
+          mappedArr[mappedElem['categoryParent']]['children'].push(mappedElem);
+        } else {
+          tree.push(mappedElem);
+        }
+      }
+    }
+    return tree;
   }
 
   onChange(deviceValue) {
@@ -79,15 +114,45 @@ export class EditComponent implements OnInit {
     });
   }
 
+  onEvent(e) {
+    this.strParent = e.node.data.categoryCode;
+    this.isShowSelect = false;
+    if (this.strParent == '') {
+      this.ngOnInit();
+    } else {
+      this.categoryPage.items = this.emailsCopy;
+      this.categoryPage.items = this.categoryPage.items.filter(res => {
+        if (res.categoryCode != null) {
+          return res.categoryCode.match(this.strParent);
+        }
+      });
+    }
+    this.parentName = this.strParent;
+
+    //this.isShowSelect = false;
+  }
+
+  makeRandom(lengthOfCode: number, possible: string) {
+    let text = '';
+    for (let i = 0; i < lengthOfCode; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+  }
+
+  
+
   // Add checked method
   onSelect(e) {
+
+    
+
     if (e.currentTarget.checked) {
       this.strCode = this.makeRandom(30,"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
       //document.getElementById("category-code-input").disabled = false;
       this.isReadonly = true;
       // (<HTMLInputElement>document.getElementById("category-code-input")).value = this.strCode
       this.form.controls.categoryCode.setValue(this.strCode);
-      //this.form.value.categoryCode = this.strCode
     } else {
       this.strCode = '';
       this.isReadonly = false
@@ -115,6 +180,12 @@ export class EditComponent implements OnInit {
     //this.parentName = this.form.value.categoryParent;
   }
 
+  Select() {
+    this.isShowSelect = false;
+    this.strParent = '';
+    this.ngOnInit();
+  }
+
   // add save method
   save() {
     if (this.form.invalid) {
@@ -124,12 +195,13 @@ export class EditComponent implements OnInit {
     if (this.form.value.categoryEnglishName == '') {
       this.form.value.categoryEnglishName = this.form.value.categoryName;
     }
+    this.form.value.categoryRank = 0;
     this.form.value.categoryParent = this.parentName;
-    if (this.form.value.categoryParent == null) {
-      this.form.value.categoryRank = 0;
-    } else {
-      this.form.value.categoryRank = this.parentRank + 1;
-    }
+    // if (this.form.value.categoryParent == null) {
+    //   this.form.value.categoryRank = 0;
+    // } else {
+    //   this.form.value.categoryRank = this.parentRank + 1;
+    // }
     const request = this.selectedBook.id
       ? this.categoryService.update(this.selectedBook.id, this.form.value)
       : this.categoryService.create(this.form.value);

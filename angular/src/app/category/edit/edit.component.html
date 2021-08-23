@@ -1,13 +1,32 @@
 
 <form [formGroup]="form" >
-  <div class="form-group">
+  <div class="form-group" skipValidation>
     <label for="category-name">Danh mục cha</label><span> * </span>
-    <select class="form-control"  (change)="onChange($event.target.value)" formControlName="categoryParent">
+    <!-- <select class="form-control"  (change)="onChange($event.target.value)" formControlName="categoryParent">
       <option value='' style="text-align: center;" >Lựa chọn danh mục cha </option>   
       <option *ngFor="let e of parentInput" [ngValue] = "e" [value]="e.id">
         {{e.categoryName}}
       </option>
-    </select>
+    </select> -->
+
+    <select class="form-control" (click)="showSelect()" *ngIf="!isShowSelect" [(ngModel)]="strParent" [ngModelOptions]="{standalone: true}" >
+      <option value="" style="text-align: center">Lựa chọn danh mục cha</option>
+      <option *ngFor="let e of emailsCopy" [value]="e.categoryCode">
+        {{ e.categoryName }}
+      </option>
+    </select>          
+    <div *ngIf="isShowSelect">
+    <div class="card border-left-primary shadow h-100 py-2">
+      <div class="card-body">
+        <button style="border: none; background:none; font-size: 18px;" type="button" (click)="Select()">--------chọn tất--------</button>
+        <tree-root [nodes]="newArray" (activate)="onEvent($event)">
+          <ng-template #treeNodeTemplate let-node let-index="index">
+            <span>{{ node.data.categoryName }}</span>
+          </ng-template>
+        </tree-root>
+      </div>
+    </div>
+  </div>
   </div>
   
   
