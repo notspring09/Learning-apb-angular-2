@@ -60,7 +60,7 @@ export class CategoryComponent implements OnInit {
       //   categoryName: item.categoryName,
       //   children: this.emailsCopy.filter(el => el.categoryParent === this.categoryName), // Not sure about that, but this is the idea
       // }));
-      console.log(this.flatListToTreeViewDataByName(this.emailsCopy));
+      console.log(this.flatListToTreeViewData(this.emailsCopy));
       console.log(this.newArray);
     });
 

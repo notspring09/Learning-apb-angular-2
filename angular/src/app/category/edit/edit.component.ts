@@ -87,6 +87,7 @@ export class EditComponent implements OnInit {
       this.isReadonly = true;
       // (<HTMLInputElement>document.getElementById("category-code-input")).value = this.strCode
       this.form.controls.categoryCode.setValue(this.strCode);
+      //this.form.value.categoryCode = this.strCode
     } else {
       this.strCode = '';
       this.isReadonly = false
